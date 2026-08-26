@@ -4,6 +4,6 @@ export default function Footer() {
       backgroundColor: 'yellow',
     }}
   >
-    Footer
+    Sistema de Desarrollo de Software - 2026
   </footer>;
 }
