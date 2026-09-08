@@ -5,11 +5,15 @@ body {
 
 nav a {
   display: block;
-  padding: 2px 10px;
   text-decoration: none;
-  color: black;
+  padding: .2em 1em;
+  color: #000;
 }
 
 nav a:hover {
   background-color: aqua;
+}
+
+nav a.selected {
+  background-color: aliceblue;
 }
