@@ -1,5 +1,6 @@
 import MenuItem from './MenuItem';
 import useGlobal from '../services/useGlobal';
+import { IconCalendar, IconScissors, IconUsers, IconBell, IconLogout, IconUser } from './Icons';
 
 export default function Menu({ visible = true }) {
   const { role, username } = useGlobal();
@@ -20,24 +21,46 @@ export default function Menu({ visible = true }) {
       }}
     >
       <MenuItem to="/">Inicio</MenuItem>
-      {!username && <MenuItem to="/login">Iniciar Sesión</MenuItem>}
 
-      {(isAdmin || isBarber || isUser) && (
-        <MenuItem to="/appointments">Agenda de Turnos</MenuItem>
+      {!username && (
+        <>
+          <MenuItem to="/login">
+            <IconUser size={16} /> Iniciar Sesión
+          </MenuItem>
+          <MenuItem to="/register">
+            <IconScissors size={16} /> Registrarse
+          </MenuItem>
+        </>
       )}
 
-      {(isUser || isAdmin) && (
-        <MenuItem to="/appointments/new">Reservar Turno</MenuItem>
+      {username && (
+        <>
+          <MenuItem to="/appointments">
+            <IconCalendar size={16} /> Agenda de Turnos
+          </MenuItem>
+          <MenuItem to="/appointments/new">
+            <IconScissors size={16} /> Reservar Turno
+          </MenuItem>
+        </>
       )}
 
-      {(isUser || isAdmin) && (
-        <MenuItem to="/notifications">Notificaciones</MenuItem>
+      {isUser && (
+        <MenuItem to="/notifications">
+          <IconBell size={16} /> Notificaciones
+        </MenuItem>
       )}
 
-      {isAdmin && <MenuItem to="/users">Gestión de Usuarios</MenuItem>}
+      {(isAdmin || isBarber) && (
+        <MenuItem to="/users">
+          <IconUsers size={16} /> {isBarber ? 'Mis Clientes' : 'Usuarios'}
+        </MenuItem>
+      )}
 
-      <MenuItem to="/about">Acerca de</MenuItem>
-      {username && <MenuItem onClick={logout}>Cerrar Sesión</MenuItem>}
+      {username && (
+        <MenuItem onClick={logout}>
+          <IconLogout size={16} /> Cerrar Sesión
+        </MenuItem>
+      )}
     </nav>
   );
 }

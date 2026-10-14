@@ -6,10 +6,10 @@ export function configureUserRouter(router) {
 
     console.log('Configurando rutas de usuario');
 
-    // GET /users - Listar usuarios (Solo Admin)
+    // GET /users - Permitido para admin, barber y user (filtrando según el rol en el servicio)
     router.get('/users', checkRoleMiddleware(['admin', 'barber', 'user']), async (req, res) => {
         try {
-            const users = await UserService.getList();
+            const users = await UserService.getList(req.session.role);
             res.json(users.map(user => ({ 
                 username: user.username,
                 displayName: user.displayName,
@@ -21,35 +21,47 @@ export function configureUserRouter(router) {
         }
     });
 
-    // POST /users - Registrar usuario
-    router.post('/users',checkRoleMiddleware(['admin']), async (req, res) => {
+    // POST /users - Registrar usuario (Admin o Barber)
+    router.post('/users', checkRoleMiddleware(['admin', 'barber']), async (req, res) => {
         try {
             const user = req.body; 
-            const newUser = await UserService.add(user);
+            const newUser = await UserService.add(user, req.session.role);
             res.json({ newUser });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
     });
 
-    // DELETE /users/:name - Eliminar usuario (Solo Admin)
-    router.delete('/users/:name', checkRoleMiddleware(['admin']), async (req, res) => {
+    // DELETE /users/:name - Eliminar usuario (Admin o Barber)
+    router.delete('/users/:name', checkRoleMiddleware(['admin', 'barber']), async (req, res) => {
         try {
             const name = req.params.name;
-            await UserService.deleteByName(name);
+            await UserService.deleteByName(name, req.session.role);
             res.json({ message: 'Usuario eliminado' });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
     });
 
-    // PATCH /users/:name - Actualizar usuario (Solo Admin)
-    router.patch('/users/:name', checkRoleMiddleware(['admin']), async (req, res) => {
+    // PATCH /users/:name - Actualizar usuario (Admin o Barber)
+    router.patch('/users/:name', checkRoleMiddleware(['admin', 'barber']), async (req, res) => {
         try {
             const name = req.params.name;
             const user = req.body;
-            await UserService.updateByName(name, user);
+            await UserService.updateByName(name, user, req.session.role);
             res.json({ message: 'Usuario actualizado' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
+
+    // POST /register - Registro público para nuevos clientes (siempre crea rol 'user')
+    router.post('/register', async (req, res) => {
+        try {
+            const user = req.body;
+            const newUser = await UserService.add(user, 'barber'); // Fuerza role = 'user'
+            res.json({ newUser });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }

@@ -6,11 +6,15 @@ import SecretField from '../components/SecretField';
 import SelectField from '../components/SelectField';
 import { toast } from 'react-toastify';
 import useUser from '../services/useUser';
+import useGlobal from '../services/useGlobal';
 
 export default function User() {
   const { username } = useParams();
   const { getUser, updateUser, addUser } = useUser();
+  const { role } = useGlobal();
   const navigate = useNavigate();
+
+  const isBarber = role === 'barber';
 
   const [data, setData] = useState({
     username: '',
@@ -24,7 +28,7 @@ export default function User() {
     if (!username) return;
     getUser(username)
       .then(userData => setData(userData))
-      .catch(err => toast.error(err?.message || 'Error al cargar los datos del usuario'));
+      .catch(err => toast.error(err?.message || 'Error al cargar los datos'));
   }, [username]);
 
   async function submitHandler(e) {
@@ -37,6 +41,9 @@ export default function User() {
 
     try {
       const payload = { ...data };
+      if (isBarber) {
+        payload.role = 'user';
+      }
       if (username && !payload.password) {
         delete payload.password;
       }
@@ -47,29 +54,35 @@ export default function User() {
         await addUser(payload);
       }
 
-      toast.success(`Usuario ${username ? 'modificado' : 'registrado'} correctamente`);
+      toast.success(`${isBarber ? 'Cliente' : 'Usuario'} ${username ? 'modificado' : 'registrado'} correctamente`);
       navigate('/users');
     } catch (err) {
-      toast.error(err.message || 'Error al guardar el usuario');
+      toast.error(err.message || 'Error al guardar');
     }
   }
 
   return (
     <Form
-      title={username ? `Modificando usuario: ${username}` : "Registrar nuevo usuario"}
+      title={
+        username
+          ? `Modificando ${isBarber ? 'cliente' : 'usuario'}: ${username}`
+          : isBarber
+            ? 'Agregar Nuevo Cliente'
+            : 'Agregar Nuevo Usuario'
+      }
       onSubmit={submitHandler}
-      submitLabel={username ? "Guardar cambios" : "Registrar"}
+      submitLabel={username ? 'Guardar cambios' : 'Agregar'}
       onCancel={() => navigate('/users')}
     >
       <TextField
-        label="Nombre de usuario (username):"
+        label="Nombre de usuario:"
         value={data.username}
         onChange={newValue => setData(d => ({ ...d, username: newValue }))}
         required
         disabled={Boolean(username)}
       />
       <TextField
-        label="Nombre completo (displayName):"
+        label="Nombre completo:"
         value={data.displayName}
         onChange={newValue => setData(d => ({ ...d, displayName: newValue }))}
         required
@@ -86,17 +99,20 @@ export default function User() {
         onChange={newValue => setData(d => ({ ...d, password: newValue }))}
         required={!username}
       />
-      <SelectField
-        label="Rol en la peluquería:"
-        value={data.role}
-        onChange={newValue => setData(d => ({ ...d, role: newValue }))}
-        options={[
-          { value: 'user', label: 'Cliente (user)' },
-          { value: 'barber', label: 'Barbero (barber)' },
-          { value: 'admin', label: 'Administrador (admin)' },
-        ]}
-        required
-      />
+
+      {!isBarber && (
+        <SelectField
+          label="Rol:"
+          value={data.role}
+          onChange={newValue => setData(d => ({ ...d, role: newValue }))}
+          options={[
+            { value: 'user', label: 'Cliente (user)' },
+            { value: 'barber', label: 'Barbero (barber)' },
+            { value: 'admin', label: 'Administrador (admin)' },
+          ]}
+          required
+        />
+      )}
     </Form>
   );
 }

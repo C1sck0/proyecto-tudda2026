@@ -1,30 +1,36 @@
+// === src/components/Header.jsx ===
 import useGlobal from '../services/useGlobal';
+import { LogoOtto, IconMenu, IconUser } from './Icons';
 
 export default function Header({ onClickMenu }) {
   const { username, role } = useGlobal();
 
   const roleLabels = {
-    admin: 'Administrador',
-    barber: 'Barbero',
-    user: 'Cliente',
+    admin: 'ADMINISTRADOR',
+    barber: 'BARBERO',
+    user: 'CLIENTE',
   };
 
   return (
     <header className="app-header">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="header-brand">
         <button className="menu-toggle-btn" onClick={() => onClickMenu()} title="Alternar menú">
-          ☰
+          <IconMenu size={20} />
         </button>
-        <h1>💈 Agenda Peluquería</h1>
+        <LogoOtto size={46} />
+        <div className="brand-text">
+          <h1>BARBERÍA OTTO</h1>
+          <span className="brand-subtitle">DESDE 2017</span>
+        </div>
       </div>
+
       <div>
-        {username ? (
+        {username && (
           <div className="user-badge">
-            <span>👤 <strong>{username}</strong></span>
+            <IconUser size={16} />
+            <span className="username-text">{username}</span>
             {role && <span className="role-pill">{roleLabels[role] || role}</span>}
           </div>
-        ) : (
-          <span style={{ fontSize: '0.9rem', opacity: 0.85 }}>Sin sesión activa</span>
         )}
       </div>
     </header>

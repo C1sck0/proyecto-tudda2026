@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import User from './pages/User';
 import Users from './pages/Users';
@@ -22,6 +23,7 @@ const routes = [
       { path: '/', element: <Home /> },
       { path: '/about', element: <About /> },
       { path: '/login', element: <Login /> },
+      { path: '/register', element: <Register /> },
       { path: '/users', element: <Users /> },
       { path: '/users/new', element: <User /> },
       { path: '/users/:username/edit', element: <User /> },

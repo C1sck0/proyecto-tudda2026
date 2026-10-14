@@ -1,30 +1,101 @@
-/* === src/App.css === */
+/* === frontend/src/App.css === */
 .app-form, .home-card {
-  background: #ffffff;
-  max-width: 600px;
+  background: #1c1c1c;
+  max-width: 650px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e2e8f0;
+  padding: 2rem;
+  border-radius: 6px;
+  border: 2px solid #333333;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.app-form h3 {
+  font-family: 'Rye', serif;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #333333;
+  color: #ffffff;
+}
+
+.otto-hero {
+  text-align: center;
+  padding: 3rem 2rem;
+  border: 3px double #525252;
+}
+
+.hero-logo {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 2px solid #737373;
+}
+
+.hero-mustache {
+  color: #8c8c8c;
+  margin-bottom: 0.5rem;
+}
+
+.otto-title {
+  font-family: 'Rye', serif;
+  font-weight: 400;
+  font-size: 2.4rem;
+  letter-spacing: 5px;
+  margin: 0.2rem 0;
+  color: #ffffff;
+}
+
+.otto-subtitle {
+  color: #a3a3a3;
+  letter-spacing: 2.5px;
+  font-size: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #2e2e2e;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: 'Graduate', serif;
+  letter-spacing: 1.5px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .field {
-  background-color: #f8fafc;
-  margin: 0.65em 0;
-  padding: 0.65em 0.85em;
+  background-color: #121212;
+  margin: 0.75em 0;
+  padding: 0.7em 1em;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  gap: 14px;
+  border: 1px solid #333333;
+  border-radius: 4px;
 }
 
 .field * {
@@ -34,74 +105,274 @@
 .field label {
   text-align: right;
   font-weight: 600;
-  color: #334155;
-  max-width: 210px;
+  color: #d4d4d4;
+  max-width: 200px;
+  font-size: 0.9rem;
 }
 
 .field input,
 .field select {
-  padding: 0.45em 0.6em;
-  border: 1px solid #94a3b8;
-  border-radius: 6px;
+  padding: 0.55em 0.75em;
+  background-color: #1c1c1c;
+  color: #ffffff;
+  border: 1px solid #525252;
+  border-radius: 4px;
   font-size: 0.95rem;
+}
+
+.field input:disabled {
+  background-color: #0f0f0f;
+  color: #737373;
 }
 
 .form-buttons {
   text-align: right;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 button,
 input[type=button],
 input[type=submit] {
-  padding: 0.45em 1em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55em 1.1em;
   margin: 0.25em;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background-color: #ffffff;
-  color: #1e293b;
+  border: 1px solid #525252;
+  border-radius: 4px;
+  background-color: #262626;
+  color: #f5f5f5;
   font-weight: 600;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s;
 }
 
+.btn-primary,
 input[type=submit] {
-  background-color: #16a34a;
-  color: white;
-  border-color: #15803d;
+  background-color: #ffffff;
+  color: #0a0a0a;
+  border-color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #1f1f1f;
+  color: #f87171;
+  border-color: #7f1d1d;
 }
 
 button:hover,
 input[type=button]:hover,
 input[type=submit]:hover {
-  filter: brightness(0.93);
+  transform: translateY(-1px);
+  filter: brightness(1.1);
 }
 
+/* === Tabla de Datos === */
 .data-table {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #333333;
   border-collapse: collapse;
-  background: #ffffff;
-  border-radius: 8px;
+  background: #1a1a1a;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .data-table th,
 .data-table td {
-  border-bottom: 1px solid #e2e8f0;
-  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #2e2e2e;
+  padding: 0.85rem 1rem;
   text-align: left;
 }
 
 .data-table th {
-  background-color: #0f172a;
-  color: #ffffff;
+  background-color: #0a0a0a;
+  color: #d4d4d4;
+  font-family: 'Graduate', serif;
+  font-size: 0.8rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
 }
 
 .data-table tr:nth-child(even) {
-  background-color: #f8fafc;
+  background-color: #161616;
 }
 
 .data-table tbody tr:hover {
-  background-color: #fef3c7;
+  background-color: #262626;
+}
+
+/* Badges de Estado */
+.status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: #262626;
+  color: #fbbf24;
+  border: 1px solid #78350f;
+}
+
+.status-proposed {
+  background: #1e293b;
+  color: #93c5fd;
+  border: 1px solid #1d4ed8;
+}
+
+.status-confirmed {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+.status-cancelled {
+  background: #1f1f1f;
+  color: #737373;
+  text-decoration: line-through;
+}
+
+/* === Calendario Interactivo Barbería OTTO === */
+.otto-calendar-section {
+  margin-top: 1.25rem;
+  background: #121212;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.otto-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.cal-month-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Graduate', serif;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.cal-nav-btn {
+  padding: 4px 12px;
+  background: #1f1f1f;
+  border: 1px solid #404040;
+}
+
+.otto-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.cal-day-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8c8c8c;
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.cal-cell {
+  justify-content: center;
+  padding: 0.65rem 0;
+  margin: 0;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  color: #e5e5e5;
+  border-radius: 4px;
+}
+
+.cal-cell.empty {
+  background: transparent;
+  border: none;
+}
+
+.cal-cell.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.cal-cell.selected {
+  background: #ffffff;
+  color: #0a0a0a;
+  border-color: #ffffff;
+  font-weight: 800;
+}
+
+.otto-slots-section {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: #121212;
+  border: 1px solid #333333;
+  border-radius: 6px;
+}
+
+.slots-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0.85rem 0;
+  font-size: 0.92rem;
+  color: #d4d4d4;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.slot-btn {
+  justify-content: center;
+  margin: 0;
+  padding: 0.6rem;
+  background: #1f1f1f;
+  border: 1px solid #404040;
+}
+
+.slot-btn.active {
+  background: #ffffff;
+  color: #0a0a0a;
+  border-color: #ffffff;
+}
+
+.selected-summary {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: #262626;
+  border-left: 4px solid #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.no-slots-msg {
+  color: #a3a3a3;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: 'Rye', serif;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
 }

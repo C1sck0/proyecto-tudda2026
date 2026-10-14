@@ -6,7 +6,7 @@ export function configureAppointmentRouter(router) {
 
     console.log('Configurando rutas de turnos');
 
-    // Sirve para obtener la lista de turnos (Permitido para admin o barber)
+   // Sirve para obtener la lista de turnos (Permitido para admin, barber y user para el calendario)
     router.get('/appointments', checkRoleMiddleware(['admin', 'barber', 'user']), async (req, res) => {
         const appointments = await AppointmentService.getList();
         res.json(appointments.map(app => ({
@@ -19,11 +19,15 @@ export function configureAppointmentRouter(router) {
         })));
     });
 
-    // Sirve para pedir un nuevo turno (Puede hacerlo cualquiera)
-    router.post('/appointments', checkRoleMiddleware(['user', 'admin']), async (req, res) => {
-        const appointmentData = req.body;
-        const newAppointment = await AppointmentService.add(appointmentData);
-        res.json({ newAppointment });
+    // Sirve para pedir un nuevo turno (Disponible para cliente, barbero y admin)
+    router.post('/appointments', checkRoleMiddleware(['user', 'barber', 'admin']), async (req, res) => {
+        try {
+            const appointmentData = req.body;
+            const newAppointment = await AppointmentService.add(appointmentData);
+            res.json({ newAppointment });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
     });
 
     // Sirve para cancelar un turno (Puede hacerlo cualquiera)
