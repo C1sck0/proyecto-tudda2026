@@ -4,10 +4,6 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
-<<<<<<< HEAD
-=======
-import Users from './pages/Users';
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
 import User from './pages/User';
 
 const routes = [
@@ -30,9 +26,7 @@ const routes = [
         element: <Login />,
       },
       {
-<<<<<<< HEAD
         path: '/user',
-=======
         path: '/users',
         element: <Users />,
       },
@@ -42,7 +36,6 @@ const routes = [
       },
       {
         path: '/users/:username/edit',
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
         element: <User />,
       },
       {
