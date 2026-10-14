@@ -1,0 +1,62 @@
+.field {
+  background-color: lightblue;
+  margin: .25em;
+  padding: .5em;
+  display: flex;
+  border: .02em solid gray;
+  border-radius: .5em;
+}
+
+.field * {
+  flex: 1;
+}
+
+.field label {
+  text-align: right;
+}
+
+.form-buttons {
+  text-align: right;
+}
+
+input[type=button],
+input[type=submit] {
+  padding: .35em .8em;
+  margin: .5em;
+  border: .025em solid grey;
+  border-radius: .5em;
+}
+
+input[type=submit] {
+  background-color: #a9ecbd;
+  border-color: green;
+}
+
+input[type=button]:hover,
+input[type=submit]:hover {
+  background-color: lightblue;
+  transition: .35s;
+}
+
+.data-table {
+  width: 100%;
+  border: .025em solid grey;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  border: .025em solid grey;
+}
+
+.data-table tr {
+  background-color: rgb(181, 217, 247);
+}
+
+.data-table tr:nth-child(even) {
+  background-color: rgb(171, 255, 213);
+}
+
+.data-table tbody tr:hover {
+  background-color: rgb(255, 234, 177);
+}

@@ -1,0 +1,27 @@
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "1234"
+}
+
+###
+
+@authorizationToken = 5f5bc092f6aca0e30fa08273690dd5ced7ae4135c30289d1fff41ff69411921b
+
+GET http://localhost:3000/api/users
+Authorization: Bearer {{authorizationToken}}
+
+###
+
+POST http://localhost:3000/users
+Authorization: Bearer {{authorizationToken}}
+Content-Type: application/json
+
+{
+  "username": "ale2",
+  "password": "123456",
+  "displayName": "Juan Pérez",
+  "email": "juan.perez@example.com"
+}
