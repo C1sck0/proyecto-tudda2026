@@ -1,13 +1,13 @@
+// === src/pages/About.jsx ===
 export default function About() {
-<<<<<<< HEAD
-    return (
-        <h6>
-            Acerca de
-        </h6>
-    );
-=======
-  return <h6>
-    Acerca de
-  </h6>;
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
+  return (
+    <div className="home-card">
+      <h3>Acerca de Agenda Peluquería</h3>
+      <p>
+        Aplicación web desarrollada para la gestión de turnos de peluquería y barbería.
+        Permite administrar usuarios con distintos roles (<strong>Administrador</strong>, <strong>Barbero</strong> y <strong>Cliente</strong>),
+        solicitar turnos, confirmar asistencias, proponer reprogramaciones de horarios y notificar a los clientes.
+      </p>
+    </div>
+  );
 }

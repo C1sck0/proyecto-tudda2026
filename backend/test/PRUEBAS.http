@@ -1,0 +1,96 @@
+### ==========================================
+### 1. LOGIN DEL BARBERO O ADMIN.
+### ==========================================
+# @name loginBarber
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "username": "Simon",
+    "password": "12345"
+}
+
+
+### ==========================================
+### 2. LOGIN DEL CLIENTE (PEPITO)
+### ==========================================
+# @name loginClient
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "username": "pepito",
+    "password": "pwdpepito"
+}
+
+
+### ==========================================
+### 3. EL CLIENTE CREA UN TURNO ORIGINAL
+### ==========================================
+# @name crearTurno
+POST http://localhost:3000/api/appointments
+Authorization: Bearer {{loginClient.response.body.session.authorizationToken}}
+Content-Type: application/json
+
+{
+    "customerName": "pepito",
+    "date": "2026-08-22 15:00",
+    "barberUsername": "Simon"
+}
+
+
+### ==========================================
+### 4. EL BARBERO PROPONE MOVER EL TURNO
+### ==========================================
+PUT http://localhost:3000/api/appointments/{{crearTurno.response.body.newAppointment._id}}/propose-move
+Authorization: Bearer {{loginBarber.response.body.session.authorizationToken}}
+Content-Type: application/json
+
+{
+    "newDate": "2026-08-23 17:00"
+}
+
+
+### ==========================================
+### 5. EL CLIENTE CONSULTA SUS NOTIFICACIONES
+### ==========================================
+# @name consultarNotificaciones
+GET http://localhost:3000/api/notifications
+Authorization: Bearer {{loginClient.response.body.session.authorizationToken}}
+
+
+### ==========================================
+### 6.A. EL CLIENTE ACEPTA EL CAMBIO DE HORARIO
+### ==========================================
+PUT http://localhost:3000/api/appointments/{{crearTurno.response.body.newAppointment._id}}/accept-change
+Authorization: Bearer {{loginClient.response.body.session.authorizationToken}}
+
+
+### ==========================================
+### 6.B. EL CLIENTE RECHAZA EL CAMBIO DE HORARIO (CANCELAR)
+### ==========================================
+PUT http://localhost:3000/api/appointments/{{crearTurno.response.body.newAppointment._id}}/cancel
+Authorization: Bearer {{loginClient.response.body.session.authorizationToken}}
+
+
+### ==========================================
+### 7. EL CLIENTE MARCA LA NOTIFICACIÓN COMO LEÍDA
+### ==========================================
+PUT http://localhost:3000/api/notifications/{{consultarNotificaciones.response.body.0._id}}/read
+Authorization: Bearer {{loginClient.response.body.session.authorizationToken}}
+
+
+### ==========================================
+### EXTRA: EL BARBERO CONFIRMA UN TURNO PENDIENTE
+### ==========================================
+PUT http://localhost:3000/api/appointments/{{crearTurno.response.body.newAppointment._id}}/confirm
+Authorization: Bearer {{loginBarber.response.body.session.authorizationToken}}
+
+
+### ==========================================
+### EXTRA: EL BARBERO RECHAZA UN TURNO PENDIENTE
+### ==========================================
+PUT http://localhost:3000/api/appointments/{{crearTurno.response.body.newAppointment._id}}/cancel
+Authorization: Bearer {{loginBarber.response.body.session.authorizationToken}}
+
+

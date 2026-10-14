@@ -1,39 +1,43 @@
 import MenuItem from './MenuItem';
-<<<<<<< HEAD
-=======
 import useGlobal from '../services/useGlobal';
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
 
-export default function Menu({
-  visible = true
-}) {
-<<<<<<< HEAD
-=======
+export default function Menu({ visible = true }) {
   const { role, username } = useGlobal();
   const isAdmin = role === 'admin';
+  const isBarber = role === 'barber';
+  const isUser = role === 'user';
 
   function logout() {
     localStorage.removeItem('session');
-    window.location.href = '/';
+    window.location.href = '/login';
   }
 
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
-  return <nav
-    style={{
-      backgroundColor: 'lightblue',
-      display: visible ? '' : 'none',
-    }}
-  >
-    <MenuItem to="/">Inicio</MenuItem>
-<<<<<<< HEAD
-    <MenuItem to="/login">Login</MenuItem>
-    <MenuItem to="/about">Acerca de</MenuItem>
-    <MenuItem to="/user">Agregar usuario</MenuItem>
-=======
-    {!username && <MenuItem to="/login">Login</MenuItem>}
-    {isAdmin && <MenuItem to="/users">Usuarios</MenuItem>}
-    {username && <MenuItem onClick={logout}>Salir</MenuItem>}
-    <MenuItem to="/about">Acerca de</MenuItem>
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
-  </nav>;
+  return (
+    <nav
+      className="sidebar-menu"
+      style={{
+        display: visible ? 'flex' : 'none',
+      }}
+    >
+      <MenuItem to="/">Inicio</MenuItem>
+      {!username && <MenuItem to="/login">Iniciar Sesión</MenuItem>}
+
+      {(isAdmin || isBarber || isUser) && (
+        <MenuItem to="/appointments">Agenda de Turnos</MenuItem>
+      )}
+
+      {(isUser || isAdmin) && (
+        <MenuItem to="/appointments/new">Reservar Turno</MenuItem>
+      )}
+
+      {(isUser || isAdmin) && (
+        <MenuItem to="/notifications">Notificaciones</MenuItem>
+      )}
+
+      {isAdmin && <MenuItem to="/users">Gestión de Usuarios</MenuItem>}
+
+      <MenuItem to="/about">Acerca de</MenuItem>
+      {username && <MenuItem onClick={logout}>Cerrar Sesión</MenuItem>}
+    </nav>
+  );
 }

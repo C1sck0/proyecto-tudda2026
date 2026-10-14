@@ -1,36 +1,36 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
+import mongoose from 'mongoose';//luego de descargar el mongoose, se importa con import
 import config from './config.js';
-import { configureRouter } from './api/router.js';
+import { configureRouter } from './api/router.js'; // server donde arranca el servidor
 import './dependencies.js';
-import errorMiddleware from './middlewares/error_middleware.js';
+import errorMiddleware from './middlewares/errors_middleware.js';
 import checkAuthorizationTokenMiddleware from './middlewares/check_authorization_token_middleware.js';
 import logMiddleware from './middlewares/log_middleware.js';
 //import bcrypt from 'bcrypt';
 
-//console.log('Hash de 1234:', await bcrypt.hash('1234', 10));
+//console.log ('hash de 1234:', bcrypt.hash('1234', 10)); // el hash de 1234 es un string que se genera a partir de la contraseña y un numero de rondas (10 en este caso)
 
-try {
-  const app = express();
+const app = express();
 
-  app.use(cors());
-  app.use(express.json());
-  app.use(logMiddleware);
-  app.use(checkAuthorizationTokenMiddleware);
+app.use(express.json()); //decodificame los json
+app.use(checkAuthorizationTokenMiddleware); //usa el middleware de check authorization token
+app.use(logMiddleware); //usa el middleware de log
 
-  const apiRouter = express.Router();
-  app.use('/api', apiRouter);
-  configureRouter(apiRouter);
+const apiRouter = express.Router();
+app.use('/api', apiRouter); //usa el router de api
+configureRouter(apiRouter); //configura el router de api
 
-  app.use(errorMiddleware);
+app.use(errorMiddleware); //usa el middleware de errores
 
-  await mongoose.connect(config.dbConnection);
-  console.log('Conectado a MongoDB');
+//conectate con mongodb, si se conecta bien, imprime el mensaje, sino imprime el error
+try{ //el try (intenta) conectarse y si no puede va al catch
+    await mongoose.connect(config.dbConnection); // el await es conectar con funciones asincronicas
+    console.log('Conectadp a MongoDB');
 
-  app.listen(config.port, () => {
-    console.log(`Server escuchando en http://localhost:${config.port}`);
-  });
+    app.listen(config, () => {
+        console.log(`Server is running on http://localhost:${config.port}`);
+    });
 } catch (error) {
-  console.error('Error initianing the server:', error);
-}
+    console.error('Error connecting to MongoDB:', error);
+};
+

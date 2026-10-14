@@ -12,14 +12,10 @@
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-<<<<<<< HEAD
-    "react-router-dom": "^6.30.6"
-=======
     "react-router-dom": "^6.30.6",
     "react-toastify": "^11.1.0",
     "sweetalert2": "^11.26.25",
     "sweetalert2-react-content": "^5.1.2"
->>>>>>> 9ae67a1a2b7183a18365a450437fb9bf9fb26435
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

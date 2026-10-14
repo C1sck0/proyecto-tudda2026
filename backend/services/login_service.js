@@ -1,33 +1,57 @@
 import { getDependency } from '../dependency.js';
 import bcrypt from 'bcrypt';
 
-export class LoginService {
-  constructor() {
-    this.userService = getDependency('userService');
-    this.sessionService = getDependency('sessionService');
-  }
+export class loginService {
+    constructor(){
+        this.userRepo = getDependency('userRepo');
+        this.sessionRepo = getDependency('sessionRepo');
+    }
 
-  async login(data) {
-    if (!data.username)
-      throw new Error('El nombre de usuario es obligatorio');
+    createToken(){
+        const array = new Uint32Array(32);
+        crypto.getRandomValues(array);
+        return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');  
+    }
 
-    if (!data.password)
-      throw new Error('La contraseña es obligatoria');
+    async login(data){
+        if (!data.username)
+            throw new Error('El nombre es obligatorio');
 
-    const user = await this.userService.getByUsername(data.username);
-    if (!user)
-      throw new Error('Usuario o contraseña incorrectos');
+        if (!data.password)
+            throw new Error('La contraseña es obligatoria');
 
-    const isMatch = await bcrypt.compare(data.password, user.password);
-    if (!isMatch)
-      throw new Error('Usuario o contraseña incorrectos');
+        const user = await this.userRepo.findOne({
+            username: data.username
+        });  
 
-    const session = await this.sessionService.createForUser(user);
+        if (!user)
+            throw new Error('Usuario o contraseña incorrectos');
 
-    return {
-      authorizationToken: session.authorizationToken,
-      username: session.username,
-      role: session.role,
-    };
-  }
+        const isMatch = await bcrypt.compare(data.password, user.password);
+        if (!isMatch)
+            throw new Error('Contraseña incorrecta');
+
+        //if (user.password != data.password)
+        //    throw new Error('Contraseña incorrecta');
+
+        var authorizationToken;
+        do{ 
+            authorizationToken = this.createToken();
+        } while (await this.sessionRepo.findOne({authorizationToken}));
+
+        const session = await this.sessionRepo.create({
+    username: user.username,
+    authorizationToken: authorizationToken,
+    open: new Date().toISOString(),
+    role: user.role
+});
+
+return {
+    username: session.username,
+    role: session.role,
+    authorizationToken: authorizationToken 
+};
+    }
+    
 }
+

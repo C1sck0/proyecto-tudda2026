@@ -1,28 +1,32 @@
 import useGlobal from '../services/useGlobal';
 
-export default function Header({
-  onClickMenu
-}) {
-  const { username } = useGlobal();
+export default function Header({ onClickMenu }) {
+  const { username, role } = useGlobal();
 
-  return <header
-    style={{
-      backgroundColor: 'pink',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}
-  >
-    <img
-      src="/menu.svg"
-      alt="Menú"
-      width={25}
-      onClick={() => onClickMenu()}
-    />
-    <h1>Acá va el título de la página</h1>
-    <div>
-      {username && <div>Bienvenido: {username}</div>}
-    </div>
-  </header>;
+  const roleLabels = {
+    admin: 'Administrador',
+    barber: 'Barbero',
+    user: 'Cliente',
+  };
+
+  return (
+    <header className="app-header">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button className="menu-toggle-btn" onClick={() => onClickMenu()} title="Alternar menú">
+          ☰
+        </button>
+        <h1>💈 Agenda Peluquería</h1>
+      </div>
+      <div>
+        {username ? (
+          <div className="user-badge">
+            <span>👤 <strong>{username}</strong></span>
+            {role && <span className="role-pill">{roleLabels[role] || role}</span>}
+          </div>
+        ) : (
+          <span style={{ fontSize: '0.9rem', opacity: 0.85 }}>Sin sesión activa</span>
+        )}
+      </div>
+    </header>
+  );
 }

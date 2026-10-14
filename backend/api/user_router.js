@@ -1,45 +1,57 @@
-import { getDependency } from '../dependency.js';
-import checkRoleMiddleware from '../middlewares/check_role_middleware.js';
+import { getDependency } from "../dependency.js";
+import checkRoleMiddleware from "../middlewares/check_role_middleware.js";
 
 export function configureUserRouter(router) {
-  const userService = getDependency('userService');
+    const UserService = getDependency('userService');
 
-  router.get('/users', checkRoleMiddleware(['admin']),  async (req, res) => {
-    const users = await userService.getList();
-    res.json(users.map(user => ({
-      username: user.username,
-      displayName: user.displayName,
-      email: user.email,
-      role: user.role,
-    })));
-  });
+    console.log('Configurando rutas de usuario');
 
-  router.get('/users/:username', checkRoleMiddleware(['admin']),  async (req, res) => {
-    const user = await userService.getByUsername(req.params.username);
-    res.json({
-      username: user.username,
-      displayName: user.displayName,
-      email: user.email,
-      role: user.role,
+    // GET /users - Listar usuarios (Solo Admin)
+    router.get('/users', checkRoleMiddleware(['admin', 'barber', 'user']), async (req, res) => {
+        try {
+            const users = await UserService.getList();
+            res.json(users.map(user => ({ 
+                username: user.username,
+                displayName: user.displayName,
+                email: user.email,
+                role: user.role
+            })));
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
     });
-  });
 
-  router.post('/users', checkRoleMiddleware(['admin']),  async (req, res) => {
-    const user = req.body;
-    const newUser = await userService.add(user);
-    res.json(newUser);
-  });
+    // POST /users - Registrar usuario
+    router.post('/users',checkRoleMiddleware(['admin']), async (req, res) => {
+        try {
+            const user = req.body; 
+            const newUser = await UserService.add(user);
+            res.json({ newUser });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
 
-  router.patch('/users/:username', checkRoleMiddleware(['admin']),  async (req, res) => {
-    const username = req.params.username;
-    const userData = req.body;
-    const updatedUser = await userService.update(username, userData);
-    res.json(updatedUser);
-  });
+    // DELETE /users/:name - Eliminar usuario (Solo Admin)
+    router.delete('/users/:name', checkRoleMiddleware(['admin']), async (req, res) => {
+        try {
+            const name = req.params.name;
+            await UserService.deleteByName(name);
+            res.json({ message: 'Usuario eliminado' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
 
-  router.delete('/users/:username', checkRoleMiddleware(['admin']),  async (req, res) => {
-    const username = req.params.username;
-    await userService.delete(username);
-    res.json({ message: `Usuario ${username} eliminado correctamente` });
-  });
+    // PATCH /users/:name - Actualizar usuario (Solo Admin)
+    router.patch('/users/:name', checkRoleMiddleware(['admin']), async (req, res) => {
+        try {
+            const name = req.params.name;
+            const user = req.body;
+            await UserService.updateByName(name, user);
+            res.json({ message: 'Usuario actualizado' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
 }
