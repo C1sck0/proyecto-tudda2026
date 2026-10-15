@@ -6,7 +6,7 @@ import TextField from '../components/TextField';
 import useAppointment from '../services/useAppointment';
 import useUser from '../services/useUser';
 import useGlobal from '../services/useGlobal';
-import { IconCalendar, IconClock, IconCheck } from '../components/Icons';
+import { IconCalendar, IconClock, IconCheck, IconX } from '../components/Icons';
 import { toast } from 'react-toastify';
 
 // Horarios de atención de 10:00 a 21:00 hs
@@ -23,24 +23,42 @@ const MONTHS = [
 
 const DAYS_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+// Marca interna para identificar horarios no laborales / feriados
+const BLOCK_MARKER = 'NO_DISPONIBLE';
+
 export default function AppointmentForm() {
   const navigate = useNavigate();
-  const { addAppointment, getAppointments } = useAppointment();
+  const { addAppointment, confirmAppointment, cancelAppointment, getAppointments } = useAppointment();
   const { getUsers } = useUser();
   const { username, role } = useGlobal();
 
   const [barbers, setBarbers] = useState([]);
-  const [clients, setClients] = useState([]);
+  const [customerOptions, setCustomerOptions] = useState([]);
   const [existingAppointments, setExistingAppointments] = useState([]);
+
+  // Modo exclusivo para Admin y Barbero: false = Agendar Turno, true = Bloquear/Desbloquear Horarios
+  const [isBlockMode, setIsBlockMode] = useState(false);
 
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
+
+  // Para modo turno normal (1 horario) y para modo bloqueo (múltiples horarios simultáneos)
   const [selectedTime, setSelectedTime] = useState('');
+  const [selectedBlockTimes, setSelectedBlockTimes] = useState([]);
 
   const [customerName, setCustomerName] = useState(role === 'user' ? username : '');
   const [barberUsername, setBarberUsername] = useState(role === 'barber' ? username : '');
+
+  async function loadAppointmentsData() {
+    try {
+      const apps = await getAppointments();
+      setExistingAppointments(apps);
+    } catch {
+      // Silencioso
+    }
+  }
 
   useEffect(() => {
     getUsers()
@@ -48,23 +66,46 @@ export default function AppointmentForm() {
         const barberList = users.filter(u => u.role === 'barber');
         const clientList = users.filter(u => u.role === 'user');
         setBarbers(barberList);
-        setClients(clientList);
+
+        if (role === 'admin') {
+          // El Admin PUEDE pedir turnos para sí mismo o para clientes
+          const currentAdmin = users.find(u => u.username === username);
+          const selfOption = {
+            value: username,
+            label: `★ Para mí mismo (${currentAdmin ? currentAdmin.displayName : username})`,
+          };
+          const mappedClients = clientList.map(c => ({
+            value: c.username,
+            label: `${c.displayName} (${c.username})`,
+          }));
+          setCustomerOptions([selfOption, ...mappedClients]);
+          setCustomerName(username);
+        } else if (role === 'barber') {
+          // El Barbero solo agenda turnos para clientes ('user')
+          const mappedClients = clientList.map(c => ({
+            value: c.username,
+            label: `${c.displayName} (${c.username})`,
+          }));
+          setCustomerOptions(mappedClients);
+          if (mappedClients.length > 0) {
+            setCustomerName(mappedClients[0].value);
+          } else {
+            setCustomerName('');
+          }
+        } else {
+          // El Cliente ('user') solo saca turno para sí mismo
+          setCustomerName(username);
+        }
 
         if (role === 'barber' && username) {
           setBarberUsername(username);
         } else if (barberList.length > 0 && !barberUsername) {
           setBarberUsername(barberList[0].username);
         }
-
-        if (role === 'user' && username) {
-          setCustomerName(username);
-        }
       })
       .catch(() => {});
 
-    getAppointments()
-      .then(apps => setExistingAppointments(apps))
-      .catch(() => {});
+    loadAppointmentsData();
   }, [role, username]);
 
   function formatDateStr(year, month, day) {
@@ -73,18 +114,27 @@ export default function AppointmentForm() {
     return `${year}-${m}-${d}`;
   }
 
-  // Oculta horarios ya tomados o confirmados para ese barbero
-  function isSlotOccupied(dateStr, timeStr) {
-    if (!barberUsername) return false;
+  // Busca si hay algún turno o bloqueo activo en esa fecha y hora
+  function getSlotRecord(dateStr, timeStr) {
+    if (!barberUsername) return null;
     const fullDate = `${dateStr} ${timeStr}`;
-    return existingAppointments.some(app =>
+    return existingAppointments.find(app =>
       app.barberUsername === barberUsername &&
       app.status !== 'cancelled' &&
       (app.date === fullDate || app.proposedDate === fullDate)
     );
   }
 
-  // Bloquea días pasados y domingos
+  function isSlotOccupied(dateStr, timeStr) {
+    return Boolean(getSlotRecord(dateStr, timeStr));
+  }
+
+  function isDayFullyBlockedOrOccupied(year, month, day) {
+    if (!barberUsername) return false;
+    const dateStr = formatDateStr(year, month, day);
+    return TIME_SLOTS.every(slot => isSlotOccupied(dateStr, slot));
+  }
+
   function isPastOrClosedDay(year, month, day) {
     const checkDate = new Date(year, month, day, 23, 59, 59);
     const now = new Date();
@@ -101,6 +151,7 @@ export default function AppointmentForm() {
     }
     setSelectedDay(null);
     setSelectedTime('');
+    setSelectedBlockTimes([]);
   }
 
   function nextMonth() {
@@ -112,6 +163,13 @@ export default function AppointmentForm() {
     }
     setSelectedDay(null);
     setSelectedTime('');
+    setSelectedBlockTimes([]);
+  }
+
+  function toggleBlockTime(slot) {
+    setSelectedBlockTimes(prev =>
+      prev.includes(slot) ? prev.filter(t => t !== slot) : [...prev, slot]
+    );
   }
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -125,18 +183,116 @@ export default function AppointmentForm() {
     ? TIME_SLOTS.filter(slot => !isSlotOccupied(selectedDateStr, slot))
     : [];
 
-  async function submitHandler(e) {
-    e.preventDefault();
-    if (!customerName) {
-      toast.warning('Seleccione o ingrese el cliente');
+  // Obtiene los bloqueos ('NO_DISPONIBLE') de ese día por si quieren desbloquearlos
+  const blockedRecordsForSelectedDay = selectedDateStr
+    ? TIME_SLOTS
+        .map(slot => ({ slot, record: getSlotRecord(selectedDateStr, slot) }))
+        .filter(item => item.record && item.record.customerName === BLOCK_MARKER)
+    : [];
+
+  // Bloquear todos los horarios libres del día de una vez (Feriado / Día libre)
+  async function handleBlockFullDay() {
+    if (!selectedDateStr || !barberUsername) {
+      toast.warning('Seleccione primero un día en el calendario');
       return;
     }
+    if (availableSlots.length === 0) {
+      toast.info('Este día ya tiene todos sus horarios bloqueados u ocupados');
+      return;
+    }
+
+    try {
+      for (const slot of availableSlots) {
+        const res = await addAppointment({
+          customerName: BLOCK_MARKER,
+          barberUsername,
+          date: `${selectedDateStr} ${slot}`,
+        });
+        const createdId = res?.newAppointment?._id || res?.newAppointment?.id;
+        if (createdId) {
+          await confirmAppointment(createdId);
+        }
+      }
+      toast.success(`Día ${selectedDateStr} bloqueado por completo`);
+      setSelectedBlockTimes([]);
+      await loadAppointmentsData();
+    } catch (error) {
+      toast.error(error.message || 'Error al bloquear el día');
+    }
+  }
+
+  // Rehabilitar / Desbloquear todo el día de una vez
+  async function handleUnblockFullDay() {
+    if (blockedRecordsForSelectedDay.length === 0) return;
+    try {
+      for (const item of blockedRecordsForSelectedDay) {
+        await cancelAppointment(item.record.id);
+      }
+      toast.success(`Se rehabilitaron los horarios del día ${selectedDateStr}`);
+      await loadAppointmentsData();
+    } catch (error) {
+      toast.error(error.message || 'Error al desbloquear el día');
+    }
+  }
+
+  // Desbloquear un horario puntual haciendo clic sobre él
+  async function handleUnblockSingleSlot(recordId, slot) {
+    try {
+      await cancelAppointment(recordId);
+      toast.info(`Horario ${slot} hs habilitado nuevamente`);
+      await loadAppointmentsData();
+    } catch (error) {
+      toast.error(error.message || 'No se pudo desbloquear el horario');
+    }
+  }
+
+  async function submitHandler(e) {
+    e.preventDefault();
     if (!barberUsername) {
       toast.warning('Seleccione un barbero');
       return;
     }
-    if (!selectedDateStr || !selectedTime) {
-      toast.warning('Haga clic en un día del calendario y elija un horario disponible');
+    if (!selectedDateStr) {
+      toast.warning('Seleccione un día en el calendario');
+      return;
+    }
+
+    // MODO BLOQUEO MÚLTIPLE DE HORARIOS
+    if (isBlockMode) {
+      if (selectedBlockTimes.length === 0) {
+        toast.warning('Seleccione uno o más horarios para bloquear');
+        return;
+      }
+      try {
+        for (const slot of selectedBlockTimes) {
+          const res = await addAppointment({
+            customerName: BLOCK_MARKER,
+            barberUsername,
+            date: `${selectedDateStr} ${slot}`,
+          });
+          const createdId = res?.newAppointment?._id || res?.newAppointment?.id;
+          if (createdId) {
+            await confirmAppointment(createdId);
+          }
+        }
+        toast.success(
+          `Se bloquearon ${selectedBlockTimes.length} horario(s) en el día ${selectedDateStr}`
+        );
+        setSelectedBlockTimes([]);
+        await loadAppointmentsData();
+      } catch (error) {
+        toast.error(error.message || 'No se pudieron bloquear los horarios');
+      }
+      return;
+    }
+
+    // MODO RESERVA DE TURNO NORMAL
+    if (!customerName) {
+      toast.warning('Seleccione el cliente para el turno');
+      return;
+    }
+    if (!selectedTime) {
+      toast.warning('Seleccione un horario disponible');
       return;
     }
 
@@ -155,28 +311,59 @@ export default function AppointmentForm() {
 
   return (
     <Form
-      title="Reservar Turno"
+      title={isBlockMode ? 'Administrar Feriados y Horarios No Laborales' : 'Reservar Turno'}
       onSubmit={submitHandler}
-      submitLabel="Confirmar Reserva"
+      submitLabel={
+        isBlockMode
+          ? `Bloquear Horarios Seleccionados (${selectedBlockTimes.length})`
+          : 'Confirmar Reserva'
+      }
       onCancel={() => navigate('/appointments')}
     >
-      {/* Campo Cliente */}
-      {role === 'user' ? (
-        <TextField label="Cliente:" value={customerName} disabled required />
-      ) : (
-        <SelectField
-          label="Cliente:"
-          value={customerName}
-          onChange={val => setCustomerName(val)}
-          options={clients.map(c => ({
-            value: c.username,
-            label: `${c.displayName} (${c.username})`,
-          }))}
-          required
-        />
+      {/* Selector de modo exclusivo para Barberos y Administradores */}
+      {(role === 'barber' || role === 'admin') && (
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '1.25rem' }}>
+          <button
+            type="button"
+            className={!isBlockMode ? 'btn-primary' : ''}
+            style={{ flex: 1 }}
+            onClick={() => {
+              setIsBlockMode(false);
+              setSelectedBlockTimes([]);
+            }}
+          >
+            <IconCalendar size={16} /> Agendar Turno
+          </button>
+          <button
+            type="button"
+            className={isBlockMode ? 'btn-danger' : ''}
+            style={{ flex: 1 }}
+            onClick={() => {
+              setIsBlockMode(true);
+              setSelectedTime('');
+            }}
+          >
+            <IconX size={16} /> Bloquear Días / Horarios
+          </button>
+        </div>
       )}
 
-      {/* Campo Barbero */}
+      {/* Selección de Cliente (Oculto cuando están bloqueando horarios) */}
+      {!isBlockMode && (
+        role === 'user' ? (
+          <TextField label="Cliente:" value={customerName} disabled required />
+        ) : (
+          <SelectField
+            label="Turno para:"
+            value={customerName}
+            onChange={val => setCustomerName(val)}
+            options={customerOptions}
+            required
+          />
+        )
+      )}
+
+      {/* Selección de Barbero */}
       {role === 'barber' ? (
         <TextField label="Barbero:" value={barberUsername} disabled required />
       ) : (
@@ -186,6 +373,7 @@ export default function AppointmentForm() {
           onChange={val => {
             setBarberUsername(val);
             setSelectedTime('');
+            setSelectedBlockTimes([]);
           }}
           options={barbers.map(b => ({
             value: b.username,
@@ -212,7 +400,11 @@ export default function AppointmentForm() {
 
           {calendarCells.map((day, idx) => {
             if (!day) return <div key={`empty-${idx}`} className="cal-cell empty" />;
-            const disabledDay = isPastOrClosedDay(currentYear, currentMonth, day);
+            const pastOrSunday = isPastOrClosedDay(currentYear, currentMonth, day);
+            const fullyBlocked = isDayFullyBlockedOrOccupied(currentYear, currentMonth, day);
+
+            // Para clientes, un día bloqueado no se puede clickear; en modo bloqueo el barbero/admin sí puede clickearlo para desbloquearlo
+            const disabledDay = pastOrSunday || (!isBlockMode && fullyBlocked);
             const isSelected = selectedDay === day;
 
             return (
@@ -223,8 +415,15 @@ export default function AppointmentForm() {
                 onClick={() => {
                   setSelectedDay(day);
                   setSelectedTime('');
+                  setSelectedBlockTimes([]);
                 }}
                 className={`cal-cell ${isSelected ? 'selected' : ''} ${disabledDay ? 'disabled' : ''}`}
+                style={
+                  isBlockMode && fullyBlocked && !pastOrSunday
+                    ? { borderColor: '#dc2626', color: '#fca5a5' }
+                    : undefined
+                }
+                title={fullyBlocked ? 'Día completo bloqueado / sin cupos' : ''}
               >
                 {day}
               </button>
@@ -233,37 +432,131 @@ export default function AppointmentForm() {
         </div>
       </div>
 
-      {/* Horarios permitidos al clickear un día */}
+      {/* Grilla de Horarios */}
       {selectedDay && (
         <div className="otto-slots-section">
-          <h4 className="slots-title">
-            <IconClock size={16} /> Horarios disponibles para el {selectedDateStr}
-          </h4>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', flexWrap: 'wrap', gap: '8px' }}>
+            <h4 className="slots-title" style={{ margin: 0 }}>
+              <IconClock size={16} />
+              {isBlockMode
+                ? `Seleccioná varios horarios para bloquear el ${selectedDateStr}`
+                : `Horarios disponibles para el ${selectedDateStr}`}
+            </h4>
 
-          {availableSlots.length === 0 ? (
-            <p className="no-slots-msg">
-              Todos los horarios de este día ya están ocupados para {barberUsername}.
-            </p>
+            {/* Acciones rápidas de Día Completo en modo bloqueo */}
+            {isBlockMode && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {availableSlots.length > 0 && (
+                  <button
+                    type="button"
+                    className="btn-danger"
+                    onClick={handleBlockFullDay}
+                  >
+                    <IconX size={14} /> Bloquear Todo el Día
+                  </button>
+                )}
+                {blockedRecordsForSelectedDay.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleUnblockFullDay}
+                  >
+                    <IconCheck size={14} /> Habilitar Todo el Día
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {!isBlockMode ? (
+            // Vista normal para reservar 1 turno (solo muestra horarios libres)
+            availableSlots.length === 0 ? (
+              <p className="no-slots-msg">
+                No quedan horarios disponibles en esta fecha para {barberUsername}.
+              </p>
+            ) : (
+              <div className="slots-grid">
+                {availableSlots.map(slot => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setSelectedTime(slot)}
+                    className={`slot-btn ${selectedTime === slot ? 'active' : ''}`}
+                  >
+                    {slot} hs
+                  </button>
+                ))}
+              </div>
+            )
           ) : (
+            // Vista Modo Bloqueo (permite marcar varios libres a la vez o desbloquear los ya bloqueados)
             <div className="slots-grid">
-              {availableSlots.map(slot => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setSelectedTime(slot)}
-                  className={`slot-btn ${selectedTime === slot ? 'active' : ''}`}
-                >
-                  {slot} hs
-                </button>
-              ))}
+              {TIME_SLOTS.map(slot => {
+                const record = getSlotRecord(selectedDateStr, slot);
+                const isBlockedSlot = record && record.customerName === BLOCK_MARKER;
+                const isClientTurn = record && record.customerName !== BLOCK_MARKER;
+                const isMarkedToBlock = selectedBlockTimes.includes(slot);
+
+                if (isClientTurn) {
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      disabled
+                      className="slot-btn"
+                      style={{ opacity: 0.35, cursor: 'not-allowed' }}
+                      title={`Reservado por cliente: ${record.customerName}`}
+                    >
+                      {slot} (Turno)
+                    </button>
+                  );
+                }
+
+                if (isBlockedSlot) {
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => handleUnblockSingleSlot(record.id, slot)}
+                      className="slot-btn btn-danger"
+                      title="Clic para volver a habilitar este horario"
+                    >
+                      {slot} (Liberar)
+                    </button>
+                  );
+                }
+
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => toggleBlockTime(slot)}
+                    className={`slot-btn ${isMarkedToBlock ? 'active' : ''}`}
+                  >
+                    {slot} hs
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
-      {selectedDateStr && selectedTime && (
+      {/* Resumen inferior */}
+      {!isBlockMode && selectedDateStr && selectedTime && (
         <div className="selected-summary">
-          <IconCheck size={16} /> Día y hora elegidos: <strong>{selectedDateStr} — {selectedTime} hs</strong>
+          <IconCheck size={16} />
+          <span>
+            Turno para <strong>{customerName}</strong> el <strong>{selectedDateStr}</strong> a las <strong>{selectedTime} hs</strong> (Barbero: {barberUsername})
+          </span>
+        </div>
+      )}
+
+      {isBlockMode && selectedDateStr && selectedBlockTimes.length > 0 && (
+        <div className="selected-summary">
+          <IconCheck size={16} />
+          <span>
+            Horarios a bloquear el <strong>{selectedDateStr}</strong>: <strong>{selectedBlockTimes.sort().join(', ')} hs</strong>
+          </span>
         </div>
       )}
     </Form>

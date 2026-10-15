@@ -19,6 +19,7 @@ const MONTHS = [
 ];
 
 const DAYS_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const BLOCK_MARKER = 'NO_DISPONIBLE';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ export default function Appointments() {
   const [list, setList] = useState([]);
   const [allAppointments, setAllAppointments] = useState([]);
 
-  // Estado para el calendario de reprogramación
   const [movingAppointment, setMovingAppointment] = useState(null);
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -46,15 +46,17 @@ export default function Appointments() {
       const res = await getAppointments();
       setAllAppointments(res);
 
-      // Filtramos de entrada los cancelados para que desaparezcan de la agenda
-      const activeOnly = res.filter(app => app.status !== 'cancelled');
+      // Ocultamos de la tabla tanto los turnos cancelados como los bloqueos de horarios/feriados
+      const realActiveAppointments = res.filter(
+        app => app.status !== 'cancelled' && app.customerName !== BLOCK_MARKER
+      );
 
       if (role === 'user') {
-        setList(activeOnly.filter(app => app.customerName === username));
+        setList(realActiveAppointments.filter(app => app.customerName === username));
       } else if (role === 'barber') {
-        setList(activeOnly.filter(app => app.barberUsername === username || app.customerName === username));
+        setList(realActiveAppointments.filter(app => app.barberUsername === username));
       } else {
-        setList(activeOnly);
+        setList(realActiveAppointments);
       }
     } catch (error) {
       toast.error(error.message || 'No se pudo obtener la agenda');
@@ -183,7 +185,7 @@ export default function Appointments() {
         </h4>
         <div className="header-actions">
           <button className="btn-primary" onClick={() => navigate('/appointments/new')}>
-            + Reservar Turno
+            {(role === 'barber' || role === 'admin') ? '+ Turno / Bloquear Horarios' : '+ Reservar Turno'}
           </button>
           <button onClick={loadList}>
             <IconRefresh size={14} /> Actualizar
@@ -206,7 +208,7 @@ export default function Appointments() {
           {list.length === 0 ? (
             <tr>
               <td colSpan="6" style={{ textAlign: 'center', padding: '1.5rem' }}>
-                No hay turnos pendientes ni confirmados en la agenda.
+                No hay turnos activos en la agenda.
               </td>
             </tr>
           ) : (
