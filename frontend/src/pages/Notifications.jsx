@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import useNotification from '../services/useNotification';
 import useAppointment from '../services/useAppointment';
+import { IconBell, IconCheck, IconX, IconRefresh } from '../components/Icons';
 
 export default function Notifications() {
   const { getNotifications, markAsRead } = useNotification();
@@ -21,21 +22,11 @@ export default function Notifications() {
     loadNotifications();
   }, []);
 
-  async function handleArchive(id) {
-    try {
-      await markAsRead(id);
-      toast.success('Notificación marcada como leída');
-      loadNotifications();
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
   async function handleAcceptFromNotification(notif) {
     try {
       await acceptChange(notif.appointmentId);
       await markAsRead(notif._id);
-      toast.success('Cambio de horario aceptado y notificación archivada');
+      toast.success('Cambio de horario aceptado');
       loadNotifications();
     } catch (error) {
       toast.error(error.message);
@@ -46,7 +37,7 @@ export default function Notifications() {
     try {
       await cancelAppointment(notif.appointmentId);
       await markAsRead(notif._id);
-      toast.info('Turno cancelado y notificación archivada');
+      toast.info('Turno cancelado');
       loadNotifications();
     } catch (error) {
       toast.error(error.message);
@@ -56,18 +47,24 @@ export default function Notifications() {
   return (
     <div>
       <div className="page-header">
-        <h4>🔔 Mis Notificaciones Pendientes</h4>
-        <button onClick={loadNotifications}>🔄 Actualizar</button>
+        <h4 className="section-title">
+          <IconBell size={20} /> Notificaciones Pendientes
+        </h4>
+        <button onClick={loadNotifications}>
+          <IconRefresh size={14} /> Actualizar
+        </button>
       </div>
 
       {notifications.length === 0 ? (
-        <p>No tenés notificaciones pendientes por leer.</p>
+        <div className="home-card" style={{ textAlign: 'center' }}>
+          <p>No tenés notificaciones pendientes.</p>
+        </div>
       ) : (
         <table className="data-table">
           <thead>
             <tr>
-              <th>Título</th>
-              <th>Mensaje</th>
+              <th>Asunto</th>
+              <th>Detalle</th>
               <th>Fecha</th>
               <th>Acciones</th>
             </tr>
@@ -79,14 +76,11 @@ export default function Notifications() {
                 <td>{n.message}</td>
                 <td>{new Date(n.createdAt).toLocaleString()}</td>
                 <td>
-                  <button onClick={() => handleAcceptFromNotification(n)}>
-                    ✅ Aceptar cambio
+                  <button className="btn-primary" onClick={() => handleAcceptFromNotification(n)}>
+                    <IconCheck size={14} /> Aceptar
                   </button>
-                  <button onClick={() => handleRejectFromNotification(n)}>
-                    ❌ Rechazar / Cancelar
-                  </button>
-                  <button onClick={() => handleArchive(n._id)}>
-                    Archivar
+                  <button className="btn-danger" onClick={() => handleRejectFromNotification(n)}>
+                    <IconX size={14} /> Rechazar
                   </button>
                 </td>
               </tr>

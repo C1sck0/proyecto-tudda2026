@@ -19,6 +19,18 @@ export function configureAppointmentRouter(router) {
         })));
     });
 
+
+    // Eliminar físicamente un turno de la base de datos
+    router.delete('/appointments/:id', checkRoleMiddleware(['admin', 'barber', 'user']), async (req, res) => {
+        try {
+            const { id } = req.params;
+            await AppointmentService.deleteById(id);
+            res.json({ message: "Turno eliminado permanentemente" });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    });
+
     // Sirve para pedir un nuevo turno (Disponible para cliente, barbero y admin)
     router.post('/appointments', checkRoleMiddleware(['user', 'barber', 'admin']), async (req, res) => {
         try {

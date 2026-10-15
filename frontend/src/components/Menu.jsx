@@ -20,46 +20,54 @@ export default function Menu({ visible = true }) {
         display: visible ? 'flex' : 'none',
       }}
     >
-      <MenuItem to="/">Inicio</MenuItem>
+      <div className="menu-group">
+        <span className="menu-group-label">PRINCIPAL</span>
+        <MenuItem to="/">Inicio</MenuItem>
 
-      {!username && (
-        <>
-          <MenuItem to="/login">
-            <IconUser size={16} /> Iniciar Sesión
-          </MenuItem>
-          <MenuItem to="/register">
-            <IconScissors size={16} /> Registrarse
-          </MenuItem>
-        </>
-      )}
+        {!username && (
+          <>
+            <MenuItem to="/login">
+              <IconUser size={16} /> Iniciar Sesión
+            </MenuItem>
+            <MenuItem to="/register">
+              <IconScissors size={16} /> Registrarse
+            </MenuItem>
+          </>
+        )}
 
-      {username && (
-        <>
-          <MenuItem to="/appointments">
-            <IconCalendar size={16} /> Agenda de Turnos
-          </MenuItem>
-          <MenuItem to="/appointments/new">
-            <IconScissors size={16} /> Reservar Turno
-          </MenuItem>
-        </>
-      )}
+        {username && (
+          <>
+            <MenuItem to="/appointments">
+              <IconCalendar size={16} /> Agenda de Turnos
+            </MenuItem>
+            <MenuItem to="/appointments/new">
+              <IconScissors size={16} /> Reservar Turno
+            </MenuItem>
+          </>
+        )}
 
-      {isUser && (
-        <MenuItem to="/notifications">
-          <IconBell size={16} /> Notificaciones
-        </MenuItem>
-      )}
+        {isUser && (
+          <MenuItem to="/notifications">
+            <IconBell size={16} /> Notificaciones
+          </MenuItem>
+        )}
+      </div>
 
       {(isAdmin || isBarber) && (
-        <MenuItem to="/users">
-          <IconUsers size={16} /> {isBarber ? 'Mis Clientes' : 'Usuarios'}
-        </MenuItem>
+        <div className="menu-group">
+          <span className="menu-group-label">ADMINISTRACIÓN</span>
+          <MenuItem to="/users">
+            <IconUsers size={16} /> {isBarber ? 'Mis Clientes' : 'Usuarios'}
+          </MenuItem>
+        </div>
       )}
 
       {username && (
-        <MenuItem onClick={logout}>
-          <IconLogout size={16} /> Cerrar Sesión
-        </MenuItem>
+        <div className="menu-footer">
+          <MenuItem onClick={logout}>
+            <IconLogout size={16} /> Cerrar Sesión
+          </MenuItem>
+        </div>
       )}
     </nav>
   );

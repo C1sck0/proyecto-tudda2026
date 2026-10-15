@@ -66,6 +66,14 @@ export class AppointmentService {
         return await appointment.save();
     }
 
+    async deleteById(id) {
+        const appointment = await this.appointmentRepo.findById(id);
+        if (!appointment) {
+            throw new Error("El turno no existe");
+        }
+        return await this.appointmentRepo.deleteOne({ _id: id });
+    }
+
     // Sirve para que el barbero proponga una nueva fecha u hora
     async proposeMove(id, newDate) {
         const appointment = await this.appointmentRepo.findById(id);

@@ -1,12 +1,12 @@
-/* === frontend/src/App.css === */
+/* === CONTENEDORES Y TARJETAS === */
 .app-form, .home-card {
-  background: #1c1c1c;
-  max-width: 650px;
+  background: #141417;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 2rem;
-  border-radius: 6px;
-  border: 2px solid #333333;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  padding: 2.25rem;
+  border-radius: 12px;
+  border: 1px solid #27272a;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
 }
 
 .app-form h3 {
@@ -15,28 +15,17 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-top: 0;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #333333;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #27272a;
   color: #ffffff;
 }
 
 .otto-hero {
   text-align: center;
-  padding: 3rem 2rem;
-  border: 3px double #525252;
-}
-
-.hero-logo {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  margin-bottom: 1rem;
-  border: 2px solid #737373;
-}
-
-.hero-mustache {
-  color: #8c8c8c;
-  margin-bottom: 0.5rem;
+  padding: 3.5rem 2.25rem;
+  border: 1px solid #2e2e33;
+  background: linear-gradient(145deg, #16161a 0%, #0d0d0f 100%);
 }
 
 .otto-title {
@@ -44,15 +33,16 @@
   font-weight: 400;
   font-size: 2.4rem;
   letter-spacing: 5px;
-  margin: 0.2rem 0;
+  margin: 0.3rem 0;
   color: #ffffff;
 }
 
 .otto-subtitle {
-  color: #a3a3a3;
-  letter-spacing: 2.5px;
-  font-size: 0.8rem;
-  margin-bottom: 2rem;
+  color: #a1a1aa;
+  letter-spacing: 3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 2.25rem;
 }
 
 .hero-actions {
@@ -62,13 +52,14 @@
   flex-wrap: wrap;
 }
 
+/* === ENCABEZADOS DE SECCIÓN === */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #2e2e2e;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid #27272a;
 }
 
 .section-title {
@@ -76,26 +67,33 @@
   align-items: center;
   gap: 10px;
   margin: 0;
-  font-family: 'Graduate', serif;
+  font-family: 'Rye', serif;
+  font-weight: 400;
   letter-spacing: 1.5px;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   text-transform: uppercase;
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
+/* === CAMPOS DE FORMULARIO === */
 .field {
-  background-color: #121212;
-  margin: 0.75em 0;
-  padding: 0.7em 1em;
+  background-color: #0c0c0e;
+  margin: 0.85em 0;
+  padding: 0.75em 1.1em;
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1px solid #333333;
-  border-radius: 4px;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.field:focus-within {
+  border-color: #71717a;
 }
 
 .field * {
@@ -105,167 +103,215 @@
 .field label {
   text-align: right;
   font-weight: 600;
-  color: #d4d4d4;
-  max-width: 200px;
-  font-size: 0.9rem;
+  color: #d4d4d8;
+  max-width: 190px;
+  font-size: 0.88rem;
 }
 
 .field input,
 .field select {
-  padding: 0.55em 0.75em;
-  background-color: #1c1c1c;
+  padding: 0.6em 0.85em;
+  background-color: #18181b;
   color: #ffffff;
-  border: 1px solid #525252;
-  border-radius: 4px;
-  font-size: 0.95rem;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 
 .field input:disabled {
-  background-color: #0f0f0f;
-  color: #737373;
+  background-color: #111113;
+  color: #71717a;
+  border-color: #27272a;
 }
 
 .form-buttons {
-  text-align: right;
-  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.75rem;
 }
 
+/* === BOTONES MODERNOS === */
 button,
 input[type=button],
 input[type=submit] {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0.55em 1.1em;
-  margin: 0.25em;
-  border: 1px solid #525252;
-  border-radius: 4px;
-  background-color: #262626;
-  color: #f5f5f5;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.6rem 1.2rem;
+  margin: 0.15rem;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  background: #1f1f23;
+  color: #f4f4f5;
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary,
-input[type=submit] {
-  background-color: #ffffff;
-  color: #0a0a0a;
-  border-color: #ffffff;
-}
-
-.btn-danger {
-  background-color: #1f1f1f;
-  color: #f87171;
-  border-color: #7f1d1d;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 button:hover,
 input[type=button]:hover,
 input[type=submit]:hover {
+  background: #27272a;
+  border-color: #71717a;
   transform: translateY(-1px);
-  filter: brightness(1.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
 }
 
-/* === Tabla de Datos === */
+button:active,
+input[type=button]:active,
+input[type=submit]:active {
+  transform: translateY(0);
+}
+
+.btn-primary,
+input[type=submit] {
+  background: #ffffff;
+  color: #09090b;
+  border-color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.btn-primary:hover,
+input[type=submit]:hover {
+  background: #e4e4e7;
+  border-color: #e4e4e7;
+  color: #09090b;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.25);
+}
+
+.btn-danger {
+  background: rgba(127, 29, 29, 0.2);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+/* === TABLA DE DATOS === */
 .data-table {
   width: 100%;
-  border: 1px solid #333333;
-  border-collapse: collapse;
-  background: #1a1a1a;
-  border-radius: 4px;
+  border: 1px solid #27272a;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #141417;
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
 .data-table th,
 .data-table td {
-  border-bottom: 1px solid #2e2e2e;
-  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #222226;
+  padding: 0.95rem 1.15rem;
   text-align: left;
+  font-size: 0.9rem;
 }
 
 .data-table th {
-  background-color: #0a0a0a;
-  color: #d4d4d4;
-  font-family: 'Graduate', serif;
-  font-size: 0.8rem;
-  letter-spacing: 1.2px;
+  background-color: #09090b;
+  color: #a1a1aa;
+  font-family: 'Rye', serif;
+  font-weight: 400;
+  font-size: 0.76rem;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
 }
 
-.data-table tr:nth-child(even) {
-  background-color: #161616;
+.data-table tbody tr {
+  transition: background-color 0.15s ease;
 }
 
 .data-table tbody tr:hover {
-  background-color: #262626;
+  background-color: #1c1c21;
 }
 
-/* Badges de Estado */
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* === BADGES DE ESTADO === */
 .status-pill {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 3px;
-  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }
 
 .status-pending {
-  background: #262626;
+  background: rgba(245, 158, 11, 0.15);
   color: #fbbf24;
-  border: 1px solid #78350f;
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .status-proposed {
-  background: #1e293b;
+  background: rgba(59, 130, 246, 0.15);
   color: #93c5fd;
-  border: 1px solid #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.4);
 }
 
 .status-confirmed {
   background: #ffffff;
-  color: #0a0a0a;
+  color: #09090b;
 }
 
 .status-cancelled {
-  background: #1f1f1f;
-  color: #737373;
+  background: #1f1f23;
+  color: #71717a;
   text-decoration: line-through;
 }
 
-/* === Calendario Interactivo Barbería OTTO === */
+/* === CALENDARIO INTERACTIVO === */
 .otto-calendar-section {
   margin-top: 1.25rem;
-  background: #121212;
-  border: 1px solid #333333;
-  border-radius: 6px;
-  padding: 1rem;
+  background: #0c0c0e;
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  padding: 1.15rem;
 }
 
 .otto-calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .cal-month-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Graduate', serif;
-  font-size: 1rem;
+  font-family: 'Rye', serif;
+  font-size: 0.98rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .cal-nav-btn {
-  padding: 4px 12px;
-  background: #1f1f1f;
-  border: 1px solid #404040;
+  padding: 6px 14px;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
 }
 
 .otto-calendar-grid {
@@ -276,56 +322,61 @@ input[type=submit]:hover {
 }
 
 .cal-day-name {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #8c8c8c;
-  padding: 4px 0;
+  color: #71717a;
+  padding: 6px 0;
   text-transform: uppercase;
 }
 
 .cal-cell {
   justify-content: center;
-  padding: 0.65rem 0;
+  padding: 0.7rem 0;
   margin: 0;
-  background: #1c1c1c;
-  border: 1px solid #2e2e2e;
-  color: #e5e5e5;
-  border-radius: 4px;
+  background: #16161a;
+  border: 1px solid #27272a;
+  color: #e4e4e7;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 .cal-cell.empty {
   background: transparent;
   border: none;
+  box-shadow: none;
 }
 
 .cal-cell.disabled {
-  opacity: 0.25;
+  opacity: 0.22;
   cursor: not-allowed;
   text-decoration: line-through;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .cal-cell.selected {
   background: #ffffff;
-  color: #0a0a0a;
+  color: #09090b;
   border-color: #ffffff;
   font-weight: 800;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.35);
 }
 
 .otto-slots-section {
   margin-top: 1.25rem;
-  padding: 1rem;
-  background: #121212;
-  border: 1px solid #333333;
-  border-radius: 6px;
+  padding: 1.15rem;
+  background: #0c0c0e;
+  border: 1px solid #27272a;
+  border-radius: 10px;
 }
 
 .slots-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 0.85rem 0;
-  font-size: 0.92rem;
-  color: #d4d4d4;
+  margin: 0 0 0.95rem 0;
+  font-size: 0.9rem;
+  color: #d4d4d8;
 }
 
 .slots-grid {
@@ -337,42 +388,35 @@ input[type=submit]:hover {
 .slot-btn {
   justify-content: center;
   margin: 0;
-  padding: 0.6rem;
-  background: #1f1f1f;
-  border: 1px solid #404040;
+  padding: 0.65rem;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
 }
 
 .slot-btn.active {
   background: #ffffff;
-  color: #0a0a0a;
+  color: #09090b;
   border-color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
 }
 
 .selected-summary {
-  margin-top: 1rem;
-  padding: 0.85rem;
-  background: #262626;
+  margin-top: 1.15rem;
+  padding: 0.9rem 1.1rem;
+  background: #18181b;
+  border: 1px solid #3f3f46;
   border-left: 4px solid #ffffff;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.9rem;
 }
 
 .no-slots-msg {
-  color: #a3a3a3;
+  color: #a1a1aa;
   font-size: 0.85rem;
   text-align: center;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font-family: 'Rye', serif;
-  font-weight: 400;
-  letter-spacing: 1.5px;
-  font-size: 1.2rem;
-  text-transform: uppercase;
 }

@@ -10,5 +10,6 @@ export default function useAppointment() {
     cancelAppointment: (id, options) => api.putJson(`/appointments/${id}/cancel`, {}, options),
     proposeMove: (id, newDate, options) => api.putJson(`/appointments/${id}/propose-move`, { newDate }, options),
     acceptChange: (id, options) => api.putJson(`/appointments/${id}/accept-change`, {}, options),
+    deleteAppointment: (id, options) => api.deleteJson(`/appointments/${id}`, options),
   };
 }

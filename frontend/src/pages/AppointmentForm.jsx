@@ -9,11 +9,11 @@ import useGlobal from '../services/useGlobal';
 import { IconCalendar, IconClock, IconCheck } from '../components/Icons';
 import { toast } from 'react-toastify';
 
-// Horarios de atención permitidos por día
+// Horarios de atención de 10:00 a 21:00 hs
 const TIME_SLOTS = [
-  '09:00', '10:00', '11:00', '12:00',
-  '13:00', '16:00', '17:00', '18:00',
-  '19:00', '20:00'
+  '10:00', '11:00', '12:00', '13:00',
+  '14:00', '15:00', '16:00', '17:00',
+  '18:00', '19:00', '20:00', '21:00'
 ];
 
 const MONTHS = [
