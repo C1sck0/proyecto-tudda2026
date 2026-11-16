@@ -58,7 +58,7 @@ export default function Home({ navigation }) {
               onPress={() => navigation.navigate('AppointmentForm')}
             />
 
-            {role === 'user' && (
+            {(role === 'user' || role === 'admin') && (
               <Button
                 label="Mis Notificaciones"
                 variant="secondary"

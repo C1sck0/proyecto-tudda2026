@@ -87,7 +87,7 @@ function CustomDrawerContent({ state, navigation }) {
         </>
       )}
 
-      {isUser && <NavItem label="Notificaciones" routeName="Notifications" />}
+      {(isUser || isAdmin) && <NavItem label="Notificaciones" routeName="Notifications" />}
 
       {(isAdmin || isBarber) && (
         <>
