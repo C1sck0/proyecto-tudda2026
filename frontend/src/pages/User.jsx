@@ -79,7 +79,7 @@ export default function User() {
         value={data.username}
         onChange={newValue => setData(d => ({ ...d, username: newValue }))}
         required
-        disabled={Boolean(username)}
+        disabled={Boolean(username) && role !== 'admin'}
       />
       <TextField
         label="Nombre completo:"

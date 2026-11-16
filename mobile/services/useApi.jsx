@@ -1,10 +1,10 @@
 import { useState, createContext, useContext } from 'react';
 
-// oxlint-disable-next-line react/only-export-components
 export const ApiContext = createContext();
 
 export function ApiProvider({ children }) {
-  const [urlBase, setUrlBase] = useState('http://10.200.23.127:3000/api');
+  // Reemplazá 192.168.X.X por la IPv4 actual de tu PC (ipconfig)
+  const [urlBase, setUrlBase] = useState('http://192.168.1.23:3000/api');
   const [authorization, setAuthorization] = useState('');
 
   async function request(url, options) {
@@ -13,7 +13,6 @@ export function ApiProvider({ children }) {
     if (options.body) {
       if (typeof options.body !== 'string') {
         options.body = JSON.stringify(options.body);
-
         options.headers ??= {};
         options.headers['Content-Type'] = 'application/json';
       }
@@ -33,73 +32,65 @@ export function ApiProvider({ children }) {
       ...options,
     });
 
-    if (!res.ok)
-      throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
+    if (options.json) {
+      const data = await res.json();
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || `Error en la petición: ${res.status}`);
+      }
+      return data;
+    }
 
-    if (options.json)
-      return await res.json();
+    if (!res.ok) {
+      throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
+    }
 
     return await res.text();
   }
 
   async function post(url, body) {
-    return await request(url, {
-      method: 'POST',
-      body,
-    });
+    return await request(url, { method: 'POST', body });
   }
 
-  async function postJson(url, body) {
-    return await request(url, {
-      method: 'POST',
-      body,
-      json: true,
-    });
+  async function postJson(url, body, options = {}) {
+    return await request(url, { method: 'POST', body, json: true, ...options });
   }
 
   async function getJson(url, options = {}) {
-    return await request(url, {
-      method: 'GET',
-      json: true,
-      ...options,
-    });
+    return await request(url, { method: 'GET', json: true, ...options });
   }
 
   async function deleteJson(url, options = {}) {
-    return await request(url, {
-      method: 'DELETE',
-      json: true,
-      ...options,
-    });
+    return await request(url, { method: 'DELETE', json: true, ...options });
   }
 
   async function patchJson(url, body, options = {}) {
-    return await request(url, {
-      method: 'PATCH',
-      body,
-      json: true,
-      ...options,
-    });
+    return await request(url, { method: 'PATCH', body, json: true, ...options });
   }
 
-  return <ApiContext.Provider
-    value={{
-      urlBase,
-      setUrlBase,
-      authorization,
-      setAuthorization,
-      post,
-      postJson,
-      getJson,
-      deleteJson,
-      patchJson,
-    }}
-  >
-    {children}
-  </ApiContext.Provider>;
+  async function putJson(url, body = {}, options = {}) {
+    return await request(url, { method: 'PUT', body, json: true, ...options });
+  }
+
+  return (
+    <ApiContext.Provider
+      value={{
+        urlBase,
+        setUrlBase,
+        authorization,
+        setAuthorization,
+        post,
+        postJson,
+        getJson,
+        deleteJson,
+        patchJson,
+        putJson,
+      }}
+    >
+      {children}
+    </ApiContext.Provider>
+  );
 }
 
-// oxlint-disable-next-line react/only-export-components
 export default function useApi() {
   return useContext(ApiContext);
 }
