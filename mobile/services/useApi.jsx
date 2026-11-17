@@ -1,10 +1,28 @@
 import { useState, createContext, useContext } from 'react';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 export const ApiContext = createContext();
 
+function getAutoApiUrl() {
+  // 1. Si lo abrís en navegador web en la misma PC
+  if (Platform.OS === 'web') {
+    return 'http://localhost:3000/api';
+  }
+
+  // 2. En celular (Expo Go), toma la IP de tu PC automáticamente desde Metro
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (hostUri) {
+    const ip = hostUri.split(':')[0];
+    return `http://${ip}:3000/api`;
+  }
+
+  // 3. Fallback por si se ejecuta un build compilado sin Metro
+  return 'http://192.168.1.23:3000/api';
+}
+
 export function ApiProvider({ children }) {
-  // Reemplazá 192.168.X.X por la IPv4 actual de tu PC (ipconfig)
-  const [urlBase, setUrlBase] = useState('http://192.168.1.23:3000/api');
+  const [urlBase, setUrlBase] = useState(getAutoApiUrl);
   const [authorization, setAuthorization] = useState('');
 
   async function request(url, options) {
